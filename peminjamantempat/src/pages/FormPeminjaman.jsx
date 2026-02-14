@@ -1,47 +1,62 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createPeminjaman } from "../services/peminjamanService";
+import { getAllTempat } from "../services/tempatService";
 
 function FormPeminjaman() {
-  const [formData, setFormData] = useState({
+  const [tempatList, setTempatList] = useState([]);
+  const [form, setForm] = useState({
     tempatId: "",
+    namaPeminjam: "",
     startTime: "",
-    endTime: "",
+    endTime: ""
   });
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  useEffect(() => {
+    loadTempat();
+  }, []);
 
-  const handleSubmit = async (e) => {
+  async function loadTempat() {
+    try {
+      const data = await getAllTempat();
+      setTempatList(data);
+    } catch (error) {
+      alert("Gagal mengambil data tempat");
+    }
+  }
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault();
 
-    if (new Date(formData.endTime) <= new Date(formData.startTime)) {
-      alert("Waktu selesai harus lebih besar dari waktu mulai!");
+    if (new Date(form.endTime) <= new Date(form.startTime)) {
+      alert("Waktu selesai harus lebih besar dari waktu mulai");
       return;
     }
 
     try {
       await createPeminjaman({
-        tempatId: Number(formData.tempatId),
-        startTime: formData.startTime,
-        endTime: formData.endTime,
+        tempatId: Number(form.tempatId),
+        namaPeminjam: form.namaPeminjam,
+        startTime: form.startTime,
+        endTime: form.endTime
       });
 
-      alert("Peminjaman berhasil dibuat!");
+      alert("Peminjaman berhasil dibuat");
 
-      setFormData({
+      setForm({
         tempatId: "",
+        namaPeminjam: "",
         startTime: "",
-        endTime: "",
+        endTime: ""
       });
 
     } catch (error) {
-      alert("Error: " + error.message);
+      alert(error.message);
     }
-  };
+  }
 
   return (
     <div style={{ padding: "20px" }}>
@@ -50,40 +65,57 @@ function FormPeminjaman() {
       <form onSubmit={handleSubmit}>
 
         <div>
-          <label>ID Tempat:</label>
+          <label>Nama Peminjam</label>
           <input
-            type="number"
-            name="tempatId"
-            value={formData.tempatId}
+            type="text"
+            name="namaPeminjam"
+            value={form.namaPeminjam}
             onChange={handleChange}
             required
           />
         </div>
 
         <div>
-          <label>Waktu Mulai:</label>
+          <label>Pilih Tempat</label>
+          <select
+            name="tempatId"
+            value={form.tempatId}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Pilih Tempat</option>
+            {tempatList.map(t => (
+              <option key={t.id} value={t.id}>
+                {t.name} - {t.location}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label>Waktu Mulai</label>
           <input
             type="datetime-local"
             name="startTime"
-            value={formData.startTime}
+            value={form.startTime}
             onChange={handleChange}
             required
           />
         </div>
 
         <div>
-          <label>Waktu Selesai:</label>
+          <label>Waktu Selesai</label>
           <input
             type="datetime-local"
             name="endTime"
-            value={formData.endTime}
+            value={form.endTime}
             onChange={handleChange}
             required
           />
         </div>
 
         <br />
-        <button type="submit">Kirim</button>
+        <button type="submit">Ajukan Peminjaman</button>
 
       </form>
     </div>
