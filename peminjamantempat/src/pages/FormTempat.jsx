@@ -8,74 +8,50 @@ function FormTempat() {
     kapasitas: "",
   });
 
-  const handleChange = (e) => {
+  function handleChange(e) {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
-  };
+  }
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
 
-    try {
-      await createTempat({
-        nama: formData.nama,
-        lokasi: formData.lokasi,
-        kapasitas: Number(formData.kapasitas),
-      });
+    await createTempat({
+      nama: formData.nama,
+      lokasi: formData.lokasi,
+      kapasitas: Number(formData.kapasitas),
+    });
 
-      alert("Tempat berhasil ditambahkan!");
+    alert("Tempat berhasil ditambahkan");
 
-      setFormData({
-        nama: "",
-        lokasi: "",
-        kapasitas: "",
-      });
-
-    } catch (error) {
-      alert(error.message);
-    }
-  };
+    setFormData({ nama: "", lokasi: "", kapasitas: "" });
+  }
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Tambah Tempat</h2>
+    <div className="card">
+      <h3 className="section-title">Tambah Tempat</h3>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="form-grid">
+
         <div>
-          <label>Nama Tempat:</label>
-          <input
-            name="nama"
-            value={formData.nama}
-            onChange={handleChange}
-            required
-          />
+          <label>Nama Tempat</label>
+          <input name="nama" value={formData.nama} onChange={handleChange} required />
         </div>
 
         <div>
-          <label>Lokasi:</label>
-          <input
-            name="lokasi"
-            value={formData.lokasi}
-            onChange={handleChange}
-            required
-          />
+          <label>Lokasi</label>
+          <input name="lokasi" value={formData.lokasi} onChange={handleChange} required />
         </div>
 
         <div>
-          <label>Kapasitas:</label>
-          <input
-            type="number"
-            name="kapasitas"
-            value={formData.kapasitas}
-            onChange={handleChange}
-            required
-          />
+          <label>Kapasitas</label>
+          <input type="number" name="kapasitas" value={formData.kapasitas} onChange={handleChange} required />
         </div>
 
-        <br />
-        <button type="submit">Simpan</button>
+        <button className="btn-primary">Simpan</button>
+
       </form>
     </div>
   );

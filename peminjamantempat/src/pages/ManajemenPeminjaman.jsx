@@ -7,33 +7,35 @@ import {
 function ManajemenPeminjaman() {
   const [data, setData] = useState([]);
 
-  const loadData = async () => {
-    const result = await getAllPeminjaman();
-    setData(result);
-  };
-
   useEffect(() => {
-    loadData();
+    getAllPeminjaman().then(setData);
   }, []);
 
-  const ubahStatus = async (id, status) => {
+  async function ubahStatus(id, status) {
     await updateStatusPeminjaman(id, status);
-    loadData();
-  };
+    const updated = await getAllPeminjaman();
+    setData(updated);
+  }
 
   return (
-    <div>
-      <h2>Kelola Status Peminjaman</h2>
+    <div className="card">
+      <h3 className="section-title">Manajemen Peminjaman</h3>
 
       {data.map((p) => (
-        <div key={p.id}>
-          {p.tempatName} — {p.status}
-          <button onClick={() => ubahStatus(p.id, "Disetujui")}>
-            Setujui
-          </button>
-          <button onClick={() => ubahStatus(p.id, "Ditolak")}>
-            Tolak
-          </button>
+        <div key={p.id} className="list-row">
+          <div>
+            <strong>{p.tempatName}</strong>
+            <div className="muted">{p.status}</div>
+          </div>
+
+          <div>
+            <button className="btn-success" onClick={() => ubahStatus(p.id, "Disetujui")}>
+              Setujui
+            </button>
+            <button className="btn-danger" onClick={() => ubahStatus(p.id, "Ditolak")}>
+              Tolak
+            </button>
+          </div>
         </div>
       ))}
     </div>

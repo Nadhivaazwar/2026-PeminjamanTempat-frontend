@@ -12,17 +12,8 @@ function FormPeminjaman() {
   });
 
   useEffect(() => {
-    loadTempat();
+    getAllTempat().then(setTempatList);
   }, []);
-
-  async function loadTempat() {
-    try {
-      const data = await getAllTempat();
-      setTempatList(data);
-    } catch (error) {
-      alert("Gagal mengambil data tempat");
-    }
-  }
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -30,59 +21,29 @@ function FormPeminjaman() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
-    if (new Date(form.endTime) <= new Date(form.startTime)) {
-      alert("Waktu selesai harus lebih besar dari waktu mulai");
-      return;
-    }
-
-    try {
-      await createPeminjaman({
-        tempatId: Number(form.tempatId),
-        namaPeminjam: form.namaPeminjam,
-        startTime: form.startTime,
-        endTime: form.endTime
-      });
-
-      alert("Peminjaman berhasil dibuat");
-
-      setForm({
-        tempatId: "",
-        namaPeminjam: "",
-        startTime: "",
-        endTime: ""
-      });
-
-    } catch (error) {
-      alert(error.message);
-    }
+    await createPeminjaman({
+      tempatId: Number(form.tempatId),
+      namaPeminjam: form.namaPeminjam,
+      startTime: form.startTime,
+      endTime: form.endTime
+    });
+    alert("Peminjaman berhasil dibuat");
   }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Form Peminjaman Ruangan</h2>
+    <div className="card">
+      <h3 className="section-title">Form Peminjaman</h3>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="form-grid">
 
         <div>
           <label>Nama Peminjam</label>
-          <input
-            type="text"
-            name="namaPeminjam"
-            value={form.namaPeminjam}
-            onChange={handleChange}
-            required
-          />
+          <input name="namaPeminjam" onChange={handleChange} required />
         </div>
 
         <div>
           <label>Pilih Tempat</label>
-          <select
-            name="tempatId"
-            value={form.tempatId}
-            onChange={handleChange}
-            required
-          >
+          <select name="tempatId" onChange={handleChange} required>
             <option value="">Pilih Tempat</option>
             {tempatList.map(t => (
               <option key={t.id} value={t.id}>
@@ -94,28 +55,15 @@ function FormPeminjaman() {
 
         <div>
           <label>Waktu Mulai</label>
-          <input
-            type="datetime-local"
-            name="startTime"
-            value={form.startTime}
-            onChange={handleChange}
-            required
-          />
+          <input type="datetime-local" name="startTime" onChange={handleChange} required />
         </div>
 
         <div>
           <label>Waktu Selesai</label>
-          <input
-            type="datetime-local"
-            name="endTime"
-            value={form.endTime}
-            onChange={handleChange}
-            required
-          />
+          <input type="datetime-local" name="endTime" onChange={handleChange} required />
         </div>
 
-        <br />
-        <button type="submit">Ajukan Peminjaman</button>
+        <button className="btn-primary full">Ajukan Peminjaman</button>
 
       </form>
     </div>

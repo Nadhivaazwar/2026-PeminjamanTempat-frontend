@@ -5,17 +5,8 @@ function ListPeminjaman() {
   const [data, setData] = useState([]);
   const [keyword, setKeyword] = useState("");
 
-  const loadData = async () => {
-    try {
-      const result = await getAllPeminjaman();
-      setData(result);
-    } catch (error) {
-      alert("Gagal mengambil data peminjaman");
-    }
-  };
-
   useEffect(() => {
-    loadData();
+    getAllPeminjaman().then(setData);
   }, []);
 
   const filtered = data.filter(item =>
@@ -23,23 +14,28 @@ function ListPeminjaman() {
     item.namaPeminjam?.toLowerCase().includes(keyword.toLowerCase())
   );
 
+  function getBadge(status) {
+    if (status === "Disetujui") return "badge success";
+    if (status === "Ditolak") return "badge danger";
+    return "badge warning";
+  }
+
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Riwayat Peminjaman</h2>
+    <div className="card">
+      <div className="table-header">
+        <h3>Data Peminjaman</h3>
+        <input
+          placeholder="Cari..."
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+        />
+      </div>
 
-      <input
-        placeholder="Cari nama tempat / peminjam..."
-        value={keyword}
-        onChange={(e) => setKeyword(e.target.value)}
-      />
-
-      <br /><br />
-
-      <table border="1" cellPadding="8">
+      <table className="table">
         <thead>
           <tr>
             <th>ID</th>
-            <th>Nama Peminjam</th>
+            <th>Nama</th>
             <th>Tempat</th>
             <th>Mulai</th>
             <th>Selesai</th>
@@ -48,14 +44,18 @@ function ListPeminjaman() {
         </thead>
 
         <tbody>
-          {filtered.map((p) => (
+          {filtered.map(p => (
             <tr key={p.id}>
               <td>{p.id}</td>
               <td>{p.namaPeminjam}</td>
               <td>{p.tempatName}</td>
               <td>{new Date(p.startTime).toLocaleString()}</td>
               <td>{new Date(p.endTime).toLocaleString()}</td>
-              <td>{p.status}</td>
+              <td>
+                <span className={getBadge(p.status)}>
+                  {p.status}
+                </span>
+              </td>
             </tr>
           ))}
         </tbody>
